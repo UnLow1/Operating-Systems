@@ -1,8 +1,8 @@
 COMPILE=gcc -I. -Wall -std=c99
 
-all: test2 static_library dynamic_library clean
+all: makeContactBook static_library dynamic_library
 
-test2: main.c binTree.c contact.c list.c binTree.h contact.h list.h
+makeContactBook: main.c binTree.c contact.c list.c binTree.h contact.h list.h
 	$(COMPILE) -o contactBook main.c binTree.c contact.c list.c
 
 static_library: main.c binTree.c contact.c list.c binTree.h contact.h list.h
@@ -18,6 +18,3 @@ dynamic_library: main.c binTree.c contact.c list.c binTree.h contact.h list.h
 	$(COMPILE) -c -fPIC contact.c 
 	$(COMPILE) -c -fPIC list.c 
 	$(COMPILE) -shared -fPIC main.o binTree.o contact.o list.o -o library_dynamic.so
-	
-clean:
-	rm -f *.o
