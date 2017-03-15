@@ -1,7 +1,3 @@
-//
-// Created by Admin on 13.03.2017.
-//
-
 #include <malloc.h>
 #include <mem.h>
 #include <stdio.h>
