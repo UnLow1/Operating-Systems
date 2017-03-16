@@ -1,7 +1,3 @@
-//
-// Created by Admin on 13.03.2017.
-//
-
 #ifndef LAB_1_BINTREE_H
 #define LAB_1_BINTREE_H
 
