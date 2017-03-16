@@ -1,79 +1,227 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <afxres.h>
 #include "binTree.h"
 #include "list.h"
 
+LARGE_INTEGER getFILETIMEoffset() {
+    SYSTEMTIME s;
+    FILETIME f;
+    LARGE_INTEGER t;
 
-int main() {
-    Node *head = NULL;
-//    TreeNode *root = NULL;
-    FILE *file = fopen("data_generator.txt", "r");
+    s.wYear = 1970;
+    s.wMonth = 1;
+    s.wDay = 1;
+    s.wHour = 0;
+    s.wMinute = 0;
+    s.wSecond = 0;
+    s.wMilliseconds = 0;
+    SystemTimeToFileTime(&s, &f);
+    t.QuadPart = f.dwHighDateTime;
+    t.QuadPart <<= 32;
+    t.QuadPart |= f.dwLowDateTime;
+    return (t);
+}
 
-    while (!feof(file)) {
-        clock_t start = clock();
+int clock_gettime(int X, struct timeval *tv) {
+    LARGE_INTEGER t;
+    FILETIME f;
+    double microseconds;
+    static LARGE_INTEGER offset;
+    static double frequencyToMicroseconds;
+    static int initialized = 0;
+    static BOOL usePerformanceCounter = 0;
 
-        Contact *contact = (Contact *) malloc(sizeof(Contact));
-        fscanf(file, "%s", contact->firstName);
-        fscanf(file, "%s", contact->lastName);
-        fscanf(file, "%s", contact->birthday);
-        fscanf(file, "%s", contact->email);
-        fscanf(file, "%s", contact->phone);
-        fscanf(file, "%s", contact->address);
-//        addContactToBinTree(&root, contact);
-        addContactToList(&head, contact);
-
-        clock_t end = clock();
-        float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-
-        printf("%.6lf\n",seconds);
-
+    if (!initialized) {
+        LARGE_INTEGER performanceFrequency;
+        initialized = 1;
+        usePerformanceCounter = QueryPerformanceFrequency(&performanceFrequency);
+        if (usePerformanceCounter) {
+            QueryPerformanceCounter(&offset);
+            frequencyToMicroseconds = (double) performanceFrequency.QuadPart / 1000000.;
+        } else {
+            offset = getFILETIMEoffset();
+            frequencyToMicroseconds = 10.;
+        }
     }
-    fclose(file);
+    if (usePerformanceCounter) QueryPerformanceCounter(&t);
+    else {
+        GetSystemTimeAsFileTime(&f);
+        t.QuadPart = f.dwHighDateTime;
+        t.QuadPart <<= 32;
+        t.QuadPart |= f.dwLowDateTime;
+    }
 
-//    printf("\nPRINTING ALL TREE\n");
-//    printAddressBookBinTree(root);
-//    printf("\nSEARCHING ONE ELEMENT\n");
-//    printContact(searchContactBinTree(root,root->contact)->contact);
-//    printf("\nSORTING BY PHONE\n");
-//    sortBinTree(&root,phone);
-//    printAddressBookBinTree(root);
-//    printf("\nDELETING ROOT\n");
-//    deleteContactFromBinTree(&root,root->contact);
-//    printf("\nPRINTING ALL TREE (AFTER DELETING ONE ELEMET)\n");
-//    printAddressBookBinTree(root);
-//    printf("\nDELETING ALL TREE\n");
-//    deleteAddressBookBinTree(&root);
-//    printf("\nPRINTING ALL TREE (AFTER DELETE)\n");
-//    printAddressBookBinTree(root);
+    t.QuadPart -= offset.QuadPart;
+    microseconds = (double) t.QuadPart / frequencyToMicroseconds;
+    t.QuadPart = microseconds;
+    tv->tv_sec = t.QuadPart / 1000000;
+    tv->tv_usec = t.QuadPart % 1000000;
+    return (0);
+}
 
-
-
-
-//    printf("Size = %d\n", sizeOfAddressBookList(head));
-//    printf("\nPrinting all elements in list\n");
-//    printAddressBookList(head);
-//
-//    printf("\nPrinting found element\n");
-//    printContact(searchContactInList(head,head->contact)->contact);
-//
-//    printf("\nSorting by birthday\n");
-//    sortList(&head, birthday);
-//    printf("Printing all elements in list (after sorting by birthday)\n");
-//    printAddressBookList(head);
-//
-//    printf("\nDeleting one element\n");
-//    deleteContactFromList(&head, head->contact);
-//    printf("Printing all elements in list (after deleting)\n");
-//    printAddressBookList(head);
-//    printf("\nDeleting AddressBook\n");
-//    deleteAddressBookList(&head);
-//    printf("Size = %d\n", sizeOfAddressBookList(head));
-
-    return 0;
+void printTime(struct timeval start_time, struct timeval stop_time) {
+    printf("%lld seconds and %lld microseconds\n", (long long) (stop_time.tv_sec - start_time.tv_sec),
+           (long long) (stop_time.tv_usec - start_time.tv_usec));
 }
 
 
+int main() {
+    struct timeval start_time;
+    struct timeval stop_time;
+    struct timeval start_time_makeContactBook;
+    struct timeval stop_time_makeContactBook;
+
+    printf("\n\n LIST\n\n");
+
+    clock_gettime(0, &start_time_makeContactBook);
+    Node *head = NULL;
+    FILE *file = fopen("data_generator.txt", "r");
+    while (!feof(file)) {
+        clock_gettime(0, &start_time);
+        Contact *contact = enterContact(file);
+        addContactToList(&head, contact);
+        clock_gettime(0, &stop_time);
+//        printf("Adding contact: ");
+//        printTime(start_time, stop_time);
+    }
+    fclose(file);
+    clock_gettime(0, &stop_time_makeContactBook);
+    printf("Making contactBook: ");
+    printTime(start_time_makeContactBook, stop_time_makeContactBook);
+
+    //    SORTING LIST
+    clock_gettime(0, &start_time);
+    sortList(&head, lastName);
+    clock_gettime(0, &stop_time);
+    printf("Sorting list: ");
+    printTime(start_time, stop_time);
+
+    //MAKING BIN TREE (USING THEM LATER)
+//    TreeNode *rootTmp = NULL;
+//    Node *headTmp = head;
+//    Contact *cont = NULL;
+//    while (headTmp != NULL) {
+//        addContactToBinTree(&rootTmp,headTmp->contact);
+//        cont = headTmp->contact;
+//        headTmp = headTmp->next;
+//    }
+
+    // FINDING ELEMENT
+    clock_gettime(0, &start_time);
+    Node *tmp = head;
+    while (tmp->next != NULL)
+        tmp = tmp->next;
+    searchContactInList(head, tmp->contact);
+    clock_gettime(0, &stop_time);
+    printf("Finding element (pesymistic): ");
+    printTime(start_time, stop_time);
+
+    clock_gettime(0, &start_time);
+    searchContactInList(head, head->contact);
+    clock_gettime(0, &stop_time);
+    printf("Finding element (optimistic): ");
+    printTime(start_time, stop_time);
+
+    // DELETING ELEMENT
+    clock_gettime(0, &start_time);
+    tmp = head;
+    while (tmp->next != NULL)
+        tmp = tmp->next;
+    deleteContactFromList(&head, tmp->contact);
+    clock_gettime(0, &stop_time);
+    printf("Deleting element (pesymistic): ");
+    printTime(start_time, stop_time);
+
+    clock_gettime(0, &start_time);
+    deleteContactFromList(&head, head->contact);
+    clock_gettime(0, &stop_time);
+    printf("Deleting element (optimistic): ");
+    printTime(start_time, stop_time);
+
+    // DELETING ADDRESSBOOK
+    clock_gettime(0, &start_time);
+    deleteAddressBookList(&head);
+    clock_gettime(0, &stop_time);
+    printf("Deleting AddressBook: ");
+    printTime(start_time, stop_time);
+
+//    printf("\nPrinting all elements in list\n");
+//    printAddressBookList(head);
 
 
+    printf("\n\n BIN TREE\n\n");
 
+    clock_gettime(0, &start_time_makeContactBook);
+    TreeNode *root = NULL;
+    file = fopen("data_generator.txt", "r");
+    while (!feof(file)) {
+        clock_gettime(0, &start_time);
+        Contact *contact = enterContact(file);
+        addContactToBinTree(&root, contact);
+        clock_gettime(0, &stop_time);
+//        printf("Adding contact: ");
+//        printTime(start_time, stop_time);
+    }
+    fclose(file);
+    clock_gettime(0, &stop_time_makeContactBook);
+    printf("Making contactBook: ");
+    printTime(start_time_makeContactBook, stop_time_makeContactBook);
+
+    // SORTING BIN TREE
+    clock_gettime(0, &start_time);
+    sortBinTree(&root, birthday);
+    clock_gettime(0, &stop_time);
+    printf("Sorting binTree: ");
+    printTime(start_time, stop_time);
+
+//    // FINDING ELEMENT
+//        clock_gettime(0, &start_time);
+////    TreeNode *temporary = rootTmp;
+////    while (temporary->right != NULL)
+////        temporary = temporary ->right;
+//    searchContactBinTree(rootTmp, cont);
+//    clock_gettime(0, &stop_time);
+//    printf("Finding element (pesymistic): ");
+//    printTime(start_time, stop_time);
+
+    clock_gettime(0, &start_time);
+    searchContactBinTree(root, root->contact);
+    clock_gettime(0, &stop_time);
+    printf("Finding element (optimistic): ");
+    printTime(start_time, stop_time);
+
+    // DELETING ELEMENT
+//    clock_gettime(0, &start_time);
+//    temporary = rootTmp;
+//    while (temporary -> right != NULL)
+//        temporary = temporary -> right;
+//    deleteContactFromBinTree(&rootTmp, temporary->contact);
+//    clock_gettime(0, &stop_time);
+//    printf("Deleting element (pesymistic): ");
+//    printTime(start_time, stop_time);
+//
+    clock_gettime(0, &start_time);
+    deleteContactFromBinTree(&root, root->contact);
+    clock_gettime(0, &stop_time);
+    printf("Deleting element (optimistic): ");
+    printTime(start_time, stop_time);
+
+
+    // DELETING ADDRESSBOOK
+    clock_gettime(0, &start_time);
+    deleteAddressBookBinTree(&root);
+    clock_gettime(0, &stop_time);
+    printf("Deleting AddressBook: ");
+    printTime(start_time, stop_time);
+
+//    printf("\nPRINTING ALL TREE\n");
+//    printAddressBookBinTree(root);
+
+
+//    printAddressBookBinTree(rootTmp);
+
+
+    return 0;
+}
