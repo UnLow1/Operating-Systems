@@ -1,7 +1,3 @@
-//
-// Created by Admin on 12.03.2017.
-//
-
 #ifndef LAB_1_LIST_H
 #define LAB_1_LIST_H
 
