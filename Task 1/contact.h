@@ -26,7 +26,7 @@ bool compare(Contact *a, Contact *b);
 
 void printContact(Contact *contact);
 
-Contact *enterContact();
+Contact *enterContact(FILE *file);
 
 
 #endif //LAB_1_CONTACT_H
