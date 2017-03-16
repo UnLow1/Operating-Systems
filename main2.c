@@ -64,23 +64,37 @@ int clock_gettime(int X, struct timeval *tv) {
 }
 
 void printTime(struct timeval start_time, struct timeval stop_time) {
-    printf("%ld seconds and %ld microseconds\n",  (stop_time.tv_sec - start_time.tv_sec),
-            (stop_time.tv_usec - start_time.tv_usec));
+    printf("%ld seconds and %ld microseconds\n", (stop_time.tv_sec - start_time.tv_sec),
+           (stop_time.tv_usec - start_time.tv_usec));
 }
 
 
 int main() {
-    void *handle;
- //   char *error;
-
-    handle = dlopen("/lib64/libm.so.6", RTLD_LAZY);
+    // Opening the library
+    void *handle = dlopen("./libshared.so", RTLD_LAZY);
     if (!handle) {
         fprintf(stderr, "%s\n", dlerror());
         return 1;
     }
 
-
-
+    // Getting the functions
+    void (*addContactToList)(Node **head, Contact *contact)=dlsym(handle, "addContactToList");
+    void (*deleteAddressBookList)(Node **head)=dlsym(handle, "deleteAddressBookList");
+    void (*deleteContactFromList)(Node **head, Contact *contact)=dlsym(handle, "deleteContactFromList");
+    Node *(*searchContactInList)(Node *head, Contact *contact)=dlsym(handle, "searchContactInList");
+    int (*sizeOfAddressBookList)(Node *head)=dlsym(handle, "sizeOfAddressBookList");
+    void (*sortList)(Node **head, enum option option)=dlsym(handle, "sortList");
+    bool (*checkSortOptionList)(enum option *option, Node *tmp)=dlsym(handle, "checkSortOptionList");
+    void (*printAddressBookList)(Node *head)=dlsym(handle, "printAddressBookList");
+    void (*deleteAddressBookBinTree)(TreeNode **root)=dlsym(handle, "deleteAddressBookBinTree");
+    void (*addContactToBinTree)(TreeNode **root, Contact *contact)=dlsym(handle, "addContactToBinTree");
+    void (*deleteContactFromBinTree)(TreeNode **root, Contact *contact)=dlsym(handle, "deleteContactFromBinTree");
+    TreeNode *(*searchContactBinTree)(TreeNode *root, Contact *contact)=dlsym(handle, "searchContactBinTree");
+    void (*sortBinTree)(TreeNode **root, enum option option)=dlsym(handle, "sortBinTree");
+    void (*printAddressBookBinTree)(TreeNode *root)=dlsym(handle, "printAddressBookBinTree");
+    bool (*compare)(Contact *a, Contact *b)=dlsym(handle, "compare");
+    void (*printContact)(Contact *contact)=dlsym(handle, "printContact");
+    Contact *(*enterContact)(FILE *file)=dlsym(handle, "enterContact");
 
     struct timeval start_time;
     struct timeval stop_time;
