@@ -1,6 +1,7 @@
-COMPILE=gcc -I. -Wall -std=c99
+O=2
+COMPILE=gcc -I. -Wall -O$(O)
 
-all: makeContactBookWithStatic makeContactBookWithShared makeContactBook libcontactBook.a libcontactBook.so
+all: makeContactBookWithStatic makeContactBookWithShared  makeContactBook libcontactBook.a libcontactBook.so
 
 makeContactBook: main.c binTree.c contact.c list.c binTree.h contact.h list.h
 	$(COMPILE) -o contactBook main.c binTree.c contact.c list.c
@@ -11,7 +12,8 @@ makeContactBookWithStatic: main.c libcontactBook.a
 makeContactBookWithShared: main.c libcontactBook.so
 	$(COMPILE) main.c -L. -Wl,-rpath=. -lcontactBook -o contactBookWithShared
 	
-
+makeContactBookWithDynamic: main2.c libcontactBook.so
+	$(COMPILE) main2.c -ldl -o contactBookWithDynamic
 
 libcontactBook.a: binTree.c contact.c list.c binTree.h contact.h list.h
 	$(COMPILE) -c binTree.c 
