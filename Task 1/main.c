@@ -62,8 +62,8 @@ int clock_gettime(int X, struct timeval *tv) {
 }
 
 void printTime(struct timeval start_time, struct timeval stop_time) {
-    printf("%lld seconds and %lld microseconds\n", (long long) (stop_time.tv_sec - start_time.tv_sec),
-           (long long) (stop_time.tv_usec - start_time.tv_usec));
+    printf("%ld seconds and %ld microseconds\n", (stop_time.tv_sec - start_time.tv_sec),
+            (stop_time.tv_usec - start_time.tv_usec));
 }
 
 
