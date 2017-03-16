@@ -20,27 +20,34 @@ void printContact(Contact *contact) {
     printf("address: %s\n", contact->address);
 }
 
-Contact *enterContact() {
+Contact *enterContact(FILE *file) {
 
     Contact *contact = (Contact *) malloc(sizeof(Contact));
 
-    printf("Enter a firstName: ");
-    scanf("%s", contact->firstName);
+    fscanf(file, "%s", contact->firstName);
+    fscanf(file, "%s", contact->lastName);
+    fscanf(file, "%s", contact->birthday);
+    fscanf(file, "%s", contact->email);
+    fscanf(file, "%s", contact->phone);
+    fscanf(file, "%s", contact->address);
 
-    printf("Enter a lastName: ");
-    scanf("%s", contact->lastName);
-
-    printf("Enter a birthday: ");
-    scanf("%s", contact->birthday);
-
-    printf("Enter a email: ");
-    scanf("%s", contact->email);
-
-    printf("Enter a phone: ");
-    scanf("%s", contact->phone);
-
-    printf("Enter a address: ");
-    scanf("%s", contact->address);
+//    printf("Enter a firstName: ");
+//    scanf("%s", contact->firstName);
+//
+//    printf("Enter a lastName: ");
+//    scanf("%s", contact->lastName);
+//
+//    printf("Enter a birthday: ");
+//    scanf("%s", contact->birthday);
+//
+//    printf("Enter a email: ");
+//    scanf("%s", contact->email);
+//
+//    printf("Enter a phone: ");
+//    scanf("%s", contact->phone);
+//
+//    printf("Enter a address: ");
+//    scanf("%s", contact->address);
 
     return contact;
 }
