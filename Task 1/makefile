@@ -16,3 +16,8 @@ dynamic_library: binTree.c contact.c list.c binTree.h contact.h list.h
 	$(COMPILE) -c -fPIC contact.c 
 	$(COMPILE) -c -fPIC list.c 
 	$(COMPILE) -shared -fPIC binTree.o contact.o list.o -o library_dynamic.so
+
+.PHONY: clean
+
+clean:
+	-rm  *.o
