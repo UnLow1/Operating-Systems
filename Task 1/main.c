@@ -35,8 +35,6 @@ int main() {
     while (!feof(file)) {
         Contact *contact = enterContact(file);
         addContactToList(&head, contact);
-
- //       printf("Adding contact: ");
     }
     fclose(file);
     timeCheckpoint("Making contactBook");
@@ -89,8 +87,6 @@ int main() {
 
         Contact *contact = enterContact(file);
         addContactToBinTree(&root, contact);
-
- //       printf("Adding contact: ");
     }
     fclose(file);
     timeCheckpoint("Making contactBook");
