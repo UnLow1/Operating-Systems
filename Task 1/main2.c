@@ -39,13 +39,11 @@ int main() {
     void (*deleteContactFromList)(Node **head, Contact *contact)=dlsym(handle, "deleteContactFromList");
     Node *(*searchContactInList)(Node *head, Contact *contact)=dlsym(handle, "searchContactInList");
     void (*sortList)(Node **head, enum option option)=dlsym(handle, "sortList");
-//    bool (*checkSortOptionList)(enum option *option, Node *tmp)=dlsym(handle, "checkSortOptionList");
     void (*deleteAddressBookBinTree)(TreeNode **root)=dlsym(handle, "deleteAddressBookBinTree");
     void (*addContactToBinTree)(TreeNode **root, Contact *contact)=dlsym(handle, "addContactToBinTree");
     void (*deleteContactFromBinTree)(TreeNode **root, Contact *contact)=dlsym(handle, "deleteContactFromBinTree");
     TreeNode *(*searchContactBinTree)(TreeNode *root, Contact *contact)=dlsym(handle, "searchContactBinTree");
     void (*sortBinTree)(TreeNode **root, enum option option)=dlsym(handle, "sortBinTree");
-//    bool (*compare)(Contact *a, Contact *b)=dlsym(handle, "compare");
     Contact *(*enterContact)(FILE *file)=dlsym(handle, "enterContact");
 
     printf("\n\n LIST\n\n");
