@@ -1,6 +1,6 @@
 #include <malloc.h>
-#include <mem.h>
 #include <stdio.h>
+#include <string.h>
 #include "binTree.h"
 
 void addContactToBinTree(TreeNode **root, Contact *contact) {
