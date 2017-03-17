@@ -1,102 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/resource.h>
 #include <time.h>
-#include <afxres.h>
 #include "binTree.h"
 #include "list.h"
 
-LARGE_INTEGER getFILETIMEoffset() {
-    SYSTEMTIME s;
-    FILETIME f;
-    LARGE_INTEGER t;
-
-    s.wYear = 1970;
-    s.wMonth = 1;
-    s.wDay = 1;
-    s.wHour = 0;
-    s.wMinute = 0;
-    s.wSecond = 0;
-    s.wMilliseconds = 0;
-    SystemTimeToFileTime(&s, &f);
-    t.QuadPart = f.dwHighDateTime;
-    t.QuadPart <<= 32;
-    t.QuadPart |= f.dwLowDateTime;
-    return (t);
-}
-
-int clock_gettime(int X, struct timeval *tv) {
-    LARGE_INTEGER t;
-    FILETIME f;
-    double microseconds;
-    static LARGE_INTEGER offset;
-    static double frequencyToMicroseconds;
-    static int initialized = 0;
-    static BOOL usePerformanceCounter = 0;
-
-    if (!initialized) {
-        LARGE_INTEGER performanceFrequency;
-        initialized = 1;
-        usePerformanceCounter = QueryPerformanceFrequency(&performanceFrequency);
-        if (usePerformanceCounter) {
-            QueryPerformanceCounter(&offset);
-            frequencyToMicroseconds = (double) performanceFrequency.QuadPart / 1000000.;
-        } else {
-            offset = getFILETIMEoffset();
-            frequencyToMicroseconds = 10.;
-        }
-    }
-    if (usePerformanceCounter) QueryPerformanceCounter(&t);
-    else {
-        GetSystemTimeAsFileTime(&f);
-        t.QuadPart = f.dwHighDateTime;
-        t.QuadPart <<= 32;
-        t.QuadPart |= f.dwLowDateTime;
-    }
-
-    t.QuadPart -= offset.QuadPart;
-    microseconds = (double) t.QuadPart / frequencyToMicroseconds;
-    t.QuadPart = microseconds;
-    tv->tv_sec = t.QuadPart / 1000000;
-    tv->tv_usec = t.QuadPart % 1000000;
-    return (0);
-}
-
 void printTime(struct timeval start_time, struct timeval stop_time) {
     printf("%ld seconds and %ld microseconds\n", (stop_time.tv_sec - start_time.tv_sec),
-            (stop_time.tv_usec - start_time.tv_usec));
+           (stop_time.tv_usec - start_time.tv_usec));
+}
+
+void timeCheckpoint(const char *message) {
+    static struct timespec previous_real_time;
+    // Getting time values
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    struct timeval user_time = usage.ru_utime;
+    struct timeval system_time = usage.ru_stime;
+    struct timespec real_time;
+    clock_gettime(CLOCK_REALTIME, &real_time);
+    // Show info
+    printf("real time: %8lld | user time:  %8ld | system time: %8ld   ---   %s\n",
+           (long long)(real_time.tv_sec-previous_real_time.tv_sec)*1000000+(real_time.tv_nsec-previous_real_time.tv_nsec)/1000,
+           user_time.tv_sec*1000000+user_time.tv_usec,
+           system_time.tv_sec*1000000+system_time.tv_usec,
+           message
+    );
+    previous_real_time = real_time;
 }
 
 
 int main() {
-    struct timeval start_time;
-    struct timeval stop_time;
-    struct timeval start_time_makeContactBook;
-    struct timeval stop_time_makeContactBook;
 
     printf("\n\n LIST\n\n");
 
-    clock_gettime(0, &start_time_makeContactBook);
+    timeCheckpoint("Starting program");
+
     Node *head = NULL;
     FILE *file = fopen("data_generator.txt", "r");
+    int i=0;
     while (!feof(file)) {
-        clock_gettime(0, &start_time);
         Contact *contact = enterContact(file);
         addContactToList(&head, contact);
-        clock_gettime(0, &stop_time);
-//        printf("Adding contact: ");
-//        printTime(start_time, stop_time);
+
+ //       printf("Adding contact: ");
     }
     fclose(file);
-    clock_gettime(0, &stop_time_makeContactBook);
-    printf("Making contactBook: ");
-    printTime(start_time_makeContactBook, stop_time_makeContactBook);
+
+    timeCheckpoint("Making contactBook");
+
 
     //    SORTING LIST
-    clock_gettime(0, &start_time);
+
     sortList(&head, lastName);
-    clock_gettime(0, &stop_time);
-    printf("Sorting list: ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Sorting list");
+
 
     //MAKING BIN TREE (USING THEM LATER)
 //    TreeNode *rootTmp = NULL;
@@ -109,43 +68,43 @@ int main() {
 //    }
 
     // FINDING ELEMENT
-    clock_gettime(0, &start_time);
+
     Node *tmp = head;
     while (tmp->next != NULL)
         tmp = tmp->next;
     searchContactInList(head, tmp->contact);
-    clock_gettime(0, &stop_time);
-    printf("Finding element (pesymistic): ");
-    printTime(start_time, stop_time);
 
-    clock_gettime(0, &start_time);
+    timeCheckpoint("Finding element (pesymistic)");
+
+
+
     searchContactInList(head, head->contact);
-    clock_gettime(0, &stop_time);
-    printf("Finding element (optimistic): ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Finding element (optimistic)");
+
 
     // DELETING ELEMENT
-    clock_gettime(0, &start_time);
+
     tmp = head;
     while (tmp->next != NULL)
         tmp = tmp->next;
     deleteContactFromList(&head, tmp->contact);
-    clock_gettime(0, &stop_time);
-    printf("Deleting element (pesymistic): ");
-    printTime(start_time, stop_time);
 
-    clock_gettime(0, &start_time);
+    timeCheckpoint("Deleting element (pesymistic)");
+
+
+
     deleteContactFromList(&head, head->contact);
-    clock_gettime(0, &stop_time);
-    printf("Deleting element (optimistic): ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Deleting element (optimistic)");
+
 
     // DELETING ADDRESSBOOK
-    clock_gettime(0, &start_time);
+
     deleteAddressBookList(&head);
-    clock_gettime(0, &stop_time);
-    printf("Deleting AddressBook: ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Deleting AddressBook");
+
 
 //    printf("\nPrinting all elements in list\n");
 //    printAddressBookList(head);
@@ -153,28 +112,27 @@ int main() {
 
     printf("\n\n BIN TREE\n\n");
 
-    clock_gettime(0, &start_time_makeContactBook);
+
     TreeNode *root = NULL;
     file = fopen("data_generator.txt", "r");
     while (!feof(file)) {
-        clock_gettime(0, &start_time);
+
         Contact *contact = enterContact(file);
         addContactToBinTree(&root, contact);
-        clock_gettime(0, &stop_time);
-//        printf("Adding contact: ");
-//        printTime(start_time, stop_time);
+
+ //       printf("Adding contact: ");
     }
     fclose(file);
-    clock_gettime(0, &stop_time_makeContactBook);
-    printf("Making contactBook: ");
-    printTime(start_time_makeContactBook, stop_time_makeContactBook);
+
+    timeCheckpoint("Making contactBook");
+
 
     // SORTING BIN TREE
-    clock_gettime(0, &start_time);
+
     sortBinTree(&root, birthday);
-    clock_gettime(0, &stop_time);
-    printf("Sorting binTree: ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Sorting binTree");
+
 
 //    // FINDING ELEMENT
 //        clock_gettime(0, &start_time);
@@ -186,11 +144,11 @@ int main() {
 //    printf("Finding element (pesymistic): ");
 //    printTime(start_time, stop_time);
 
-    clock_gettime(0, &start_time);
+
     searchContactBinTree(root, root->contact);
-    clock_gettime(0, &stop_time);
-    printf("Finding element (optimistic): ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Finding element (optimistic)");
+
 
     // DELETING ELEMENT
 //    clock_gettime(0, &start_time);
@@ -202,19 +160,19 @@ int main() {
 //    printf("Deleting element (pesymistic): ");
 //    printTime(start_time, stop_time);
 //
-    clock_gettime(0, &start_time);
+
     deleteContactFromBinTree(&root, root->contact);
-    clock_gettime(0, &stop_time);
-    printf("Deleting element (optimistic): ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Deleting element (optimistic)");
+
 
 
     // DELETING ADDRESSBOOK
-    clock_gettime(0, &start_time);
+
     deleteAddressBookBinTree(&root);
-    clock_gettime(0, &stop_time);
-    printf("Deleting AddressBook: ");
-    printTime(start_time, stop_time);
+
+    timeCheckpoint("Deleting AddressBook");
+
 
 //    printf("\nPRINTING ALL TREE\n");
 //    printAddressBookBinTree(root);
