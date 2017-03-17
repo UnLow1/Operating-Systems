@@ -21,6 +21,6 @@ TreeNode *searchContactBinTree(TreeNode *root, Contact *contact);
 
 void sortBinTree(TreeNode **root, enum option option);
 
-void printAddressBookBinTree(TreeNode *root);
+//void printAddressBookBinTree(TreeNode *root);
 
 #endif //LAB_1_BINTREE_H
