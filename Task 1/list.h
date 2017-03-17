@@ -11,8 +11,6 @@ struct Node {
     Node *prev;
 };
 
-// ????? Node* makeAddressBook();
-
 void deleteAddressBookList(Node **head);
 
 void addContactToList(Node **head, Contact *contact);
