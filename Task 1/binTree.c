@@ -33,13 +33,13 @@ void addContactToBinTree(TreeNode **root, Contact *contact) {
     }
 }
 
-void printAddressBookBinTree(TreeNode *root) {
-    if (root != NULL) {
-        printAddressBookBinTree(root->left);
-        printContact(root->contact);
-        printAddressBookBinTree(root->right);
-    }
-}
+//void printAddressBookBinTree(TreeNode *root) {
+//    if (root != NULL) {
+//        printAddressBookBinTree(root->left);
+//        printContact(root->contact);
+//        printAddressBookBinTree(root->right);
+//    }
+//}
 
 void deleteAddressBookBinTree(TreeNode **root) {
     if (*root == NULL)
@@ -58,7 +58,7 @@ TreeNode *searchContactBinTree(TreeNode *root, Contact *contact) {
         return NULL;
     if (compare(root->contact, contact))
         return root;
-    if (searchContactBinTree(root->left, contact) != NULL)
+    if (result == NULL && searchContactBinTree(root->left, contact) != NULL)
         result = searchContactBinTree(root->left, contact);
     if (result == NULL && searchContactBinTree(root->right, contact) != NULL)
         result = searchContactBinTree(root->right, contact);
@@ -125,6 +125,9 @@ void sortBinTree(TreeNode **root, enum option option) {
                         break;
                     case phone:
                         goLeft = strcmp(node->contact->phone, tmp->contact->phone) < 0;
+                        break;
+                    default:
+                        goLeft = strcmp(node->contact->lastName, tmp->contact->lastName) < 0;
                         break;
                 }
                 if (goLeft) {//contact->lastname < tmp->contact->lastname
