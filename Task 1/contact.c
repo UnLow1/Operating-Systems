@@ -31,23 +31,5 @@ Contact *enterContact(FILE *file) {
     fscanf(file, "%s", contact->phone);
     fscanf(file, "%s", contact->address);
 
-//    printf("Enter a firstName: ");
-//    scanf("%s", contact->firstName);
-//
-//    printf("Enter a lastName: ");
-//    scanf("%s", contact->lastName);
-//
-//    printf("Enter a birthday: ");
-//    scanf("%s", contact->birthday);
-//
-//    printf("Enter a email: ");
-//    scanf("%s", contact->email);
-//
-//    printf("Enter a phone: ");
-//    scanf("%s", contact->phone);
-//
-//    printf("Enter a address: ");
-//    scanf("%s", contact->address);
-
     return contact;
 }
