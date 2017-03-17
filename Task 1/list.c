@@ -64,15 +64,6 @@ Node *searchContactInList(Node *head, Contact *contact) {
     return result;
 }
 
-int sizeOfAddressBookList(Node *head) {
-    int size = 0;
-    while (head != NULL) {
-        size++;
-        head = head->next;
-    }
-    return size;
-}
-
 void sortList(Node **head, enum option option) {
     if (*head == NULL || (*head)->next == NULL)// 0 or 1 element list - not sorting
         return;
@@ -121,18 +112,21 @@ bool checkSortOptionList(enum option *option, Node *tmp) {
         case phone:
             change = tmp->prev != NULL && strcmp(tmp->contact->phone, tmp->prev->contact->phone) < 0;
             break;
+        default:
+            change = tmp->prev != NULL && strcmp(tmp->contact->lastName, tmp->prev->contact->lastName) < 0;
+            break;
     }
     return change;
 }
 
-void printAddressBookList(Node *head) {
-    while (head != NULL) {
-        printf("\nfirstName: %s\n", head->contact->firstName);
-        printf("latName: %s\n", head->contact->lastName);
-        printf("birthday: %s\n", head->contact->birthday);
-        printf("email: %s\n", head->contact->email);
-        printf("phone: %s\n", head->contact->phone);
-        printf("address: %s\n", head->contact->address);
-        head = head->next;
-    }
-}
+//void printAddressBookList(Node *head) {
+//    while (head != NULL) {
+//        printf("\nfirstName: %s\n", head->contact->firstName);
+//        printf("latName: %s\n", head->contact->lastName);
+//        printf("birthday: %s\n", head->contact->birthday);
+//        printf("email: %s\n", head->contact->email);
+//        printf("phone: %s\n", head->contact->phone);
+//        printf("address: %s\n", head->contact->address);
+//        head = head->next;
+//    }
+//}
