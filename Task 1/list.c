@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <mem.h>
+#include <string.h>
 #include "list.h"
 
 
