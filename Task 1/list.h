@@ -19,12 +19,10 @@ void deleteContactFromList(Node **head, Contact *contact);
 
 Node *searchContactInList(Node *head, Contact *contact);
 
-int sizeOfAddressBookList(Node *head);
-
 void sortList(Node **head, enum option option);
 
 bool checkSortOptionList(enum option *option, Node *tmp);
 
-void printAddressBookList(Node *head);
+//void printAddressBookList(Node *head);
 
 #endif //LAB_1_LIST_H
