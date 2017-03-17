@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/resource.h>
 #include "binTree.h"
 #include "list.h"
 #include <dlfcn.h>
@@ -15,7 +16,7 @@ void timeCheckpoint(const char *message) {
     struct timespec real_time;
     clock_gettime(CLOCK_REALTIME, &real_time);
     // Show info
-    printf("real time: %8lld | user time:  %8ld | system time: %8ld   ---   %s\n",
+    printf("real time: %lld | user time:  %ld | system time: %ld   ---   %s\n",
            (long long)(real_time.tv_sec-previous_real_time.tv_sec)*1000000+(real_time.tv_nsec-previous_real_time.tv_nsec)/1000,
            user_time.tv_sec*1000000+user_time.tv_usec,
            system_time.tv_sec*1000000+system_time.tv_usec,
@@ -37,18 +38,14 @@ int main() {
     void (*deleteAddressBookList)(Node **head)=dlsym(handle, "deleteAddressBookList");
     void (*deleteContactFromList)(Node **head, Contact *contact)=dlsym(handle, "deleteContactFromList");
     Node *(*searchContactInList)(Node *head, Contact *contact)=dlsym(handle, "searchContactInList");
-    int (*sizeOfAddressBookList)(Node *head)=dlsym(handle, "sizeOfAddressBookList");
     void (*sortList)(Node **head, enum option option)=dlsym(handle, "sortList");
-    bool (*checkSortOptionList)(enum option *option, Node *tmp)=dlsym(handle, "checkSortOptionList");
-    void (*printAddressBookList)(Node *head)=dlsym(handle, "printAddressBookList");
+//    bool (*checkSortOptionList)(enum option *option, Node *tmp)=dlsym(handle, "checkSortOptionList");
     void (*deleteAddressBookBinTree)(TreeNode **root)=dlsym(handle, "deleteAddressBookBinTree");
     void (*addContactToBinTree)(TreeNode **root, Contact *contact)=dlsym(handle, "addContactToBinTree");
     void (*deleteContactFromBinTree)(TreeNode **root, Contact *contact)=dlsym(handle, "deleteContactFromBinTree");
     TreeNode *(*searchContactBinTree)(TreeNode *root, Contact *contact)=dlsym(handle, "searchContactBinTree");
     void (*sortBinTree)(TreeNode **root, enum option option)=dlsym(handle, "sortBinTree");
-    void (*printAddressBookBinTree)(TreeNode *root)=dlsym(handle, "printAddressBookBinTree");
-    bool (*compare)(Contact *a, Contact *b)=dlsym(handle, "compare");
-    void (*printContact)(Contact *contact)=dlsym(handle, "printContact");
+//    bool (*compare)(Contact *a, Contact *b)=dlsym(handle, "compare");
     Contact *(*enterContact)(FILE *file)=dlsym(handle, "enterContact");
 
     printf("\n\n LIST\n\n");
@@ -71,19 +68,7 @@ int main() {
     //    SORTING LIST
 
     sortList(&head, lastName);
-
     timeCheckpoint("Sorting list");
-
-
-    //MAKING BIN TREE (USING THEM LATER)
-//    TreeNode *rootTmp = NULL;
-//    Node *headTmp = head;
-//    Contact *cont = NULL;
-//    while (headTmp != NULL) {
-//        addContactToBinTree(&rootTmp,headTmp->contact);
-//        cont = headTmp->contact;
-//        headTmp = headTmp->next;
-//    }
 
     // FINDING ELEMENT
 
@@ -91,13 +76,10 @@ int main() {
     while (tmp->next != NULL)
         tmp = tmp->next;
     searchContactInList(head, tmp->contact);
-
     timeCheckpoint("Finding element (pesymistic)");
 
 
-
     searchContactInList(head, head->contact);
-
     timeCheckpoint("Finding element (optimistic)");
 
 
@@ -107,20 +89,17 @@ int main() {
     while (tmp->next != NULL)
         tmp = tmp->next;
     deleteContactFromList(&head, tmp->contact);
-
     timeCheckpoint("Deleting element (pesymistic)");
 
 
 
     deleteContactFromList(&head, head->contact);
-
     timeCheckpoint("Deleting element (optimistic)");
 
 
     // DELETING ADDRESSBOOK
 
     deleteAddressBookList(&head);
-
     timeCheckpoint("Deleting AddressBook");
 
 
@@ -141,46 +120,24 @@ int main() {
         //       printf("Adding contact: ");
     }
     fclose(file);
-
     timeCheckpoint("Making contactBook");
 
 
     // SORTING BIN TREE
 
     sortBinTree(&root, birthday);
-
     timeCheckpoint("Sorting binTree");
 
 
-//    // FINDING ELEMENT
-//        clock_gettime(0, &start_time);
-////    TreeNode *temporary = rootTmp;
-////    while (temporary->right != NULL)
-////        temporary = temporary ->right;
-//    searchContactBinTree(rootTmp, cont);
-//    clock_gettime(0, &stop_time);
-//    printf("Finding element (pesymistic): ");
-//    printTime(start_time, stop_time);
-
+//    // FINDING ELEMENT (OPTIMISTIC)
 
     searchContactBinTree(root, root->contact);
-
     timeCheckpoint("Finding element (optimistic)");
 
 
-    // DELETING ELEMENT
-//    clock_gettime(0, &start_time);
-//    temporary = rootTmp;
-//    while (temporary -> right != NULL)
-//        temporary = temporary -> right;
-//    deleteContactFromBinTree(&rootTmp, temporary->contact);
-//    clock_gettime(0, &stop_time);
-//    printf("Deleting element (pesymistic): ");
-//    printTime(start_time, stop_time);
-//
+    // DELETING ELEMENT (OPTIMISTIC)
 
     deleteContactFromBinTree(&root, root->contact);
-
     timeCheckpoint("Deleting element (optimistic)");
 
 
@@ -188,15 +145,37 @@ int main() {
     // DELETING ADDRESSBOOK
 
     deleteAddressBookBinTree(&root);
-
     timeCheckpoint("Deleting AddressBook");
 
 
 //    printf("\nPRINTING ALL TREE\n");
 //    printAddressBookBinTree(root);
 
+    printf("\n\n");
+    //MAKING BIN TREE (USING THEM LATER)
+    head = NULL;
+    file = fopen("data_generator.txt", "r");
+    while (!feof(file)) {
+        Contact *contact = enterContact(file);
+        addContactToList(&head, contact);
+    }
+    fclose(file);
+    sortList(&head, lastName);
 
-//    printAddressBookBinTree(rootTmp);
+    root = NULL;
+    Contact *cont = NULL;
+    while (head != NULL) {
+        addContactToBinTree(&root,head->contact);
+        cont = head->contact;
+        deleteContactFromList(&head,head->contact);
+    }
+    timeCheckpoint("Making new tree for testing pesymistic options");
+
+    deleteContactFromBinTree(&root, cont);
+    timeCheckpoint("Deleting element (pesymistic)");
+
+    searchContactBinTree(root, cont);
+    timeCheckpoint("Finding element (pesymistic)");
 
     dlclose(handle);
 
