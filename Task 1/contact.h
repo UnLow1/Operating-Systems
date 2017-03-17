@@ -24,7 +24,7 @@ struct Contact {
 
 bool compare(Contact *a, Contact *b);
 
-void printContact(Contact *contact);
+//void printContact(Contact *contact);
 
 Contact *enterContact(FILE *file);
 
