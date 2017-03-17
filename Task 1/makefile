@@ -1,5 +1,5 @@
 O=2
-COMPILE=gcc -I. -Wall -O$(O)
+COMPILE=gcc -I. -g -Wall -O$(O)
 
 all: makeContactBookWithShared makeContactBookWithStatic makeContactBookWithDynamic libcontactBook.a libcontactBook.so
 
