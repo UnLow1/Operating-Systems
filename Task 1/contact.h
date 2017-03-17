@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define SIZE 25
+#define SIZE 50
 
 typedef enum option option;
 
