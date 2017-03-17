@@ -15,7 +15,7 @@ void timeCheckpoint(const char *message) {
     struct timespec real_time;
     clock_gettime(CLOCK_REALTIME, &real_time);
     // Show info
-    printf("real time: %8lld | user time:  %8ld | system time: %8ld   ---   %s\n",
+    printf("real time: %lld | user time: %ld | system time: %ld  ---  %s\n",
            (long long)(real_time.tv_sec-previous_real_time.tv_sec)*1000000+(real_time.tv_nsec-previous_real_time.tv_nsec)/1000,
            user_time.tv_sec*1000000+user_time.tv_usec,
            system_time.tv_sec*1000000+system_time.tv_usec,
@@ -23,7 +23,6 @@ void timeCheckpoint(const char *message) {
     );
     previous_real_time = real_time;
 }
-
 
 int main() {
 
@@ -33,7 +32,6 @@ int main() {
 
     Node *head = NULL;
     FILE *file = fopen("data_generator.txt", "r");
-    int i=0;
     while (!feof(file)) {
         Contact *contact = enterContact(file);
         addContactToList(&head, contact);
@@ -41,26 +39,13 @@ int main() {
  //       printf("Adding contact: ");
     }
     fclose(file);
-
     timeCheckpoint("Making contactBook");
 
 
     //    SORTING LIST
 
     sortList(&head, lastName);
-
     timeCheckpoint("Sorting list");
-
-
-    //MAKING BIN TREE (USING THEM LATER)
-//    TreeNode *rootTmp = NULL;
-//    Node *headTmp = head;
-//    Contact *cont = NULL;
-//    while (headTmp != NULL) {
-//        addContactToBinTree(&rootTmp,headTmp->contact);
-//        cont = headTmp->contact;
-//        headTmp = headTmp->next;
-//    }
 
     // FINDING ELEMENT
 
@@ -68,13 +53,11 @@ int main() {
     while (tmp->next != NULL)
         tmp = tmp->next;
     searchContactInList(head, tmp->contact);
-
     timeCheckpoint("Finding element (pesymistic)");
 
 
 
     searchContactInList(head, head->contact);
-
     timeCheckpoint("Finding element (optimistic)");
 
 
@@ -84,26 +67,18 @@ int main() {
     while (tmp->next != NULL)
         tmp = tmp->next;
     deleteContactFromList(&head, tmp->contact);
-
     timeCheckpoint("Deleting element (pesymistic)");
 
 
 
     deleteContactFromList(&head, head->contact);
-
     timeCheckpoint("Deleting element (optimistic)");
 
 
     // DELETING ADDRESSBOOK
 
     deleteAddressBookList(&head);
-
     timeCheckpoint("Deleting AddressBook");
-
-
-//    printf("\nPrinting all elements in list\n");
-//    printAddressBookList(head);
-
 
     printf("\n\n BIN TREE\n\n");
 
@@ -118,49 +93,25 @@ int main() {
  //       printf("Adding contact: ");
     }
     fclose(file);
-
     timeCheckpoint("Making contactBook");
 
 
     // SORTING BIN TREE
 
     sortBinTree(&root, birthday);
-
     timeCheckpoint("Sorting binTree");
 
 
-//    // FINDING ELEMENT
-//        clock_gettime(0, &start_time);
-////    TreeNode *temporary = rootTmp;
-////    while (temporary->right != NULL)
-////        temporary = temporary ->right;
-//    searchContactBinTree(rootTmp, cont);
-//    clock_gettime(0, &stop_time);
-//    printf("Finding element (pesymistic): ");
-//    printTime(start_time, stop_time);
-
+   // FINDING ELEMENT (OPTIMISTIC)
 
     searchContactBinTree(root, root->contact);
-
     timeCheckpoint("Finding element (optimistic)");
 
 
-    // DELETING ELEMENT
-//    clock_gettime(0, &start_time);
-//    temporary = rootTmp;
-//    while (temporary -> right != NULL)
-//        temporary = temporary -> right;
-//    deleteContactFromBinTree(&rootTmp, temporary->contact);
-//    clock_gettime(0, &stop_time);
-//    printf("Deleting element (pesymistic): ");
-//    printTime(start_time, stop_time);
-//
+    // DELETING ELEMENT (OPTIMISTIC)
 
     deleteContactFromBinTree(&root, root->contact);
-
     timeCheckpoint("Deleting element (optimistic)");
-
-
 
     // DELETING ADDRESSBOOK
 
@@ -169,11 +120,31 @@ int main() {
     timeCheckpoint("Deleting AddressBook");
 
 
-//    printf("\nPRINTING ALL TREE\n");
-//    printAddressBookBinTree(root);
+    printf("\n\n");
+    //MAKING BIN TREE (USING THEM LATER)
+    head = NULL;
+    file = fopen("data_generator.txt", "r");
+    while (!feof(file)) {
+        Contact *contact = enterContact(file);
+        addContactToList(&head, contact);
+    }
+    fclose(file);
+    sortList(&head, lastName);
 
+    root = NULL;
+    Contact *cont = NULL;
+    while (head != NULL) {
+        addContactToBinTree(&root,head->contact);
+        cont = head->contact;
+        deleteContactFromList(&head,head->contact);
+    }
+    timeCheckpoint("Making new tree for testing pesymistic options");
 
-//    printAddressBookBinTree(rootTmp);
+    deleteContactFromBinTree(&root, cont);
+    timeCheckpoint("Deleting element (pesymistic)");
+
+    searchContactBinTree(root, cont);
+    timeCheckpoint("Finding element (pesymistic)");
 
 
     return 0;
