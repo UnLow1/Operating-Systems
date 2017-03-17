@@ -5,11 +5,6 @@
 #include "binTree.h"
 #include "list.h"
 
-void printTime(struct timeval start_time, struct timeval stop_time) {
-    printf("%ld seconds and %ld microseconds\n", (stop_time.tv_sec - start_time.tv_sec),
-           (stop_time.tv_usec - start_time.tv_usec));
-}
-
 void timeCheckpoint(const char *message) {
     static struct timespec previous_real_time;
     // Getting time values
