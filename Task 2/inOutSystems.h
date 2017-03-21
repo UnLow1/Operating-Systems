@@ -3,8 +3,10 @@
 
 #include "fileInfo.h"
 
-void generate(FileInfo *fileInfo);
+void generateSyS(FileInfo *fileInfo);
 
-void shuffle(FileInfo *fileInfo);
+void shuffleSys(FileInfo *fileInfo);
+
+void sortSys(FileInfo *fileInfo);
 
 #endif //TASK2_INOUTSYSTEMS_H
