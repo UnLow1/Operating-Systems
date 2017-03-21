@@ -5,7 +5,7 @@
 #include "inOutSystems.h"
 
 
-void generateSyS(FileInfo *fileInfo) {
+void generateSys(FileInfo *fileInfo) {
     int randomData = open("/dev/urandom", O_RDONLY);
     int results = open(fileInfo->filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
     char sign;
@@ -13,7 +13,6 @@ void generateSyS(FileInfo *fileInfo) {
     for (int i = 0; i < fileInfo->quantity; i++) {
         for (int j = 0; j < fileInfo->size; j++) {
             read(randomData, &sign, sizeof(sign));
-            //printf("%c", (int) (sign));
             //write(results, &sign, sizeof(sign));
             sign = (char) (rand() % 25 + 97);
             write(results, &sign, sizeof(sign));
@@ -25,7 +24,6 @@ void generateSyS(FileInfo *fileInfo) {
 }
 
 void shuffleSys(FileInfo *fileInfo) {
-    // Reading all lines from file to lines[][]
     int source = open(fileInfo->filename, O_RDWR);
     char lines[2][fileInfo->size + 1];
     srand(time(NULL));

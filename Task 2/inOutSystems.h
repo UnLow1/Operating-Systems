@@ -3,7 +3,7 @@
 
 #include "fileInfo.h"
 
-void generateSyS(FileInfo *fileInfo);
+void generateSys(FileInfo *fileInfo);
 
 void shuffleSys(FileInfo *fileInfo);
 
