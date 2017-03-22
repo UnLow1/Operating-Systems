@@ -1,0 +1,127 @@
+RECORD_SIZE = 4
+
+100 RECORDS
+SYSTEM FUNCTIONS
+user time: 0 | system time: 0  ---  Generating file
+user time: 0 | system time: 8000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+100 RECORDS
+LIBRARY FUNCTIONS
+user time: 0 | system time: 0  ---  Generating file
+user time: 0 | system time: 4000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+10000 RECORDS
+SYSTEM FUNCTIONS
+user time: 16000 | system time: 68000  ---  Generating file
+user time: 4632000 | system time: 88204000  ---  Sorting file
+user time: 0 | system time: 20000  ---  Shuffling file
+
+10000 RECORDS
+LIBRARY FUNCTIONS
+user time: 4000 | system time: 0  ---  Generating file
+user time: 12592000 | system time: 58076000  ---  Sorting file
+user time: 8000 | system time: 28000  ---  Shuffling file
+
+
+
+
+RECORD_SIZE = 512
+
+250 RECORDS
+SYSTEM FUNCTIONS
+user time: 8000 | system time: 224000  ---  Generating file
+user time: 4000 | system time: 60000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+250 RECORDS
+LIBRARY FUNCTIONS
+user time: 4000 | system time: 8000  ---  Generating file
+user time: 8000 | system time: 52000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+2500 RECORDS
+SYSTEM FUNCTIONS
+user time: 60000 | system time: 2264000  ---  Generating file
+user time: 288000 | system time: 6100000  ---  Sorting file
+user time: 0 | system time: 4000  ---  Shuffling file
+
+2500 RECORDS
+LIBRARY FUNCTIONS
+user time: 32000 | system time: 92000  ---  Generating file
+user time: 1132000 | system time: 4720000  ---  Sorting file
+user time: 1132000 | system time: 4720000  ---  Sorting file
+
+
+
+
+RECORD_SIZE = 4096
+
+125 RECORDS
+SYSTEM FUNCTIONS
+user time: 40000 | system time: 884000  ---  Generating file
+user time: 0 | system time: 28000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+125 RECORDS
+LIBRARY FUNCTIONS
+user time: 8000 | system time: 44000  ---  Generating file
+user time: 4000 | system time: 40000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+2000 RECORDS
+SYSTEM FUNCTIONS
+user time: 476000 | system time: 14200000  ---  Generating file
+user time: 188000 | system time: 6804000  ---  Sorting file
+user time: 0 | system time: 8000  ---  Shuffling file
+
+2000 RECORDS
+LIBRARY FUNCTIONS
+user time: 260000 | system time: 520000  ---  Generating file
+user time: 1376000 | system time: 9460000  ---  Sorting file
+user time: 0 | system time: 16000  ---  Shuffling file
+
+
+
+
+RECORD_SIZE = 8192
+
+100 RECORDS
+SYSTEM FUNCTIONS
+user time: 52000 | system time: 1412000  ---  Generating file
+user time: 0 | system time: 28000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+100 RECORDS
+LIBRARY FUNCTIONS
+user time: 24000 | system time: 56000  ---  Generating file
+user time: 4000 | system time: 40000  ---  Sorting file
+user time: 0 | system time: 0  ---  Shuffling file
+
+1000 RECORDS
+SYSTEM FUNCTIONS
+user time: 496000 | system time: 14224000  ---  Generating file
+user time: 32000 | system time: 2664000  ---  Sorting file
+user time: 0 | system time: 8000  ---  Shuffling file
+
+1000 RECORDS
+LIBRARY FUNCTIONS
+user time: 212000 | system time: 568000  ---  Generating file
+user time: 436000 | system time: 3796000  ---  Sorting file
+user time: 0 | system time: 12000  ---  Shuffling file
+
+
+
+
+
+REASUMUJAC:
+
+Im wiecej rekordow, tym dluzej trwa sortowanie. 
+W takiej sytuacji implementacja oparta na funkcjach systemowych zuzywa wiecej czasu systemowego, 
+a mniej czasu uzytkownika niz implementacja oparta na funkcjach biblioteki C.
+
+Jesli mamy do czynienia z rekordami o duzej wielkosci, 
+wtedy wydluza sie znacznie czas generowania pliku.
+W takiej sytuacji implementacja oparta na funkcjach systemowych zuzywa wiecej czasu systemowego
+oraz wiecej czasu uzytkownika niz implementacja oparta na funkcjach biblioteki C.
