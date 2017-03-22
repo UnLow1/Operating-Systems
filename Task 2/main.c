@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <sys/resource.h>
 #include "fileInfo.h"
 #include "inOutSystems.h"
@@ -24,9 +23,8 @@ void timeCheckpoint(const char *message) {
 int main(int argc, char *argv[]) {
 
     FileInfo *fileInfo = enterFileInfo(argv);
-    
-    timeCheckpoint("Starting program\n");
 
+    timeCheckpoint("Starting program\n");
 
     if (strcmp(fileInfo->mode, "sys") == 0) {
 
@@ -57,7 +55,6 @@ int main(int argc, char *argv[]) {
             timeCheckpoint("Sorting file\n");
         }
     }
-
     return 0;
 }
 
