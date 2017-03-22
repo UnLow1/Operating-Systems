@@ -3,13 +3,17 @@
 
 typedef struct FileInfo FileInfo;
 
+typedef enum mode mode;
+
 struct FileInfo {
     char *filename;
     int size;
     int quantity;
+    char *mode;
+    char *operation;
 };
 
-FileInfo *enterFileInfo(int argc, char *argv[]);
+FileInfo *enterFileInfo(char *argv[]);
 
 
 #endif //TASK2_FILEINFO_H

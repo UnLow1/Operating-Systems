@@ -10,8 +10,9 @@ void generateSys(FileInfo *fileInfo) {
     int results = open(fileInfo->filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
     char sign;
     srand(time(NULL));
-    for (int i = 0; i < fileInfo->quantity; i++) {
-        for (int j = 0; j < fileInfo->size; j++) {
+    int i, j;
+    for (i = 0; i < fileInfo->quantity; i++) {
+        for (j = 0; j < fileInfo->size; j++) {
             read(randomData, &sign, sizeof(sign));
             //write(results, &sign, sizeof(sign));
             sign = (char) (rand() % 25 + 97);
@@ -27,7 +28,8 @@ void shuffleSys(FileInfo *fileInfo) {
     int source = open(fileInfo->filename, O_RDWR);
     char lines[2][fileInfo->size + 1];
     srand(time(NULL));
-    for (int i = 0; i < fileInfo->quantity; ++i) {
+    int i;
+    for (i = 0; i < fileInfo->quantity; ++i) {
         lseek(source, i * sizeof(lines[0]), SEEK_SET);
         read(source, lines[0], sizeof(lines[0]));
         int random = rand() % fileInfo->quantity;
@@ -45,8 +47,9 @@ void shuffleSys(FileInfo *fileInfo) {
 void sortSys(FileInfo *fileInfo) {
     int source = open(fileInfo->filename, O_RDWR);
     char lines[2][fileInfo->size + 1];
-    for (int i = fileInfo->quantity - 1; i >= 0; i--) {
-        for (int j = 0; j < i; j++) {
+    int i, j;
+    for (i = fileInfo->quantity - 1; i >= 0; i--) {
+        for (j = 0; j < i; j++) {
             lseek(source, j * sizeof(lines[0]), SEEK_SET);
             read(source, lines[0], sizeof(lines[0]));
             read(source, lines[1], sizeof(lines[1]));

@@ -9,10 +9,11 @@ void generateLib(FileInfo *fileInfo) {
     FILE *results = fopen(fileInfo->filename, "w");
     char sign;
     srand(time(NULL));
-    for (int i = 0; i < fileInfo->quantity; i++) {
-        for (int j = 0; j < fileInfo->size; j++) {
+    int i, j;
+    for (i = 0; i < fileInfo->quantity; i++) {
+        for (j = 0; j < fileInfo->size; j++) {
             fread(&sign, sizeof(sign), 1, randomData);
-            //write(results, &sign, sizeof(sign));
+            //fwrite(&sign, sizeof(sign), 1, results);
             sign = (char) (rand() % 25 + 97);
             fwrite(&sign, sizeof(sign), 1, results);
         }
@@ -26,7 +27,8 @@ void shuffleLib(FileInfo *fileInfo) {
     FILE *source = fopen(fileInfo->filename, "r+");
     char lines[2][fileInfo->size + 1];
     srand(time(NULL));
-    for (int i = 0; i < fileInfo->quantity; ++i) {
+    int i;
+    for (i = 0; i < fileInfo->quantity; ++i) {
         fseek(source, i * sizeof(lines[0]), SEEK_SET);
         fread(lines[0], sizeof(lines[0]), 1, source);
         int random = rand() % fileInfo->quantity;
@@ -44,8 +46,9 @@ void shuffleLib(FileInfo *fileInfo) {
 void sortLib(FileInfo *fileInfo) {
     FILE *source = fopen(fileInfo->filename, "r+");
     char lines[2][fileInfo->size + 1];
-    for (int i = fileInfo->quantity - 1; i >= 0; i--) {
-        for (int j = 0; j < i; j++) {
+    int i, j;
+    for (i = fileInfo->quantity - 1; i >= 0; i--) {
+        for (j = 0; j < i; j++) {
             fseek(source, j * sizeof(lines[0]), SEEK_SET);
             fread(lines[0], sizeof(lines[0]), 1, source);
             fread(lines[1], sizeof(lines[1]), 1, source);

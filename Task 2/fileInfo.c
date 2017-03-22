@@ -1,14 +1,17 @@
 #include <malloc.h>
 #include <stdlib.h>
-#import "fileInfo.h"
+#include <string.h>
+#include "fileInfo.h"
 
 
-FileInfo *enterFileInfo(int argc, char *argv[]) {
+FileInfo *enterFileInfo(char *argv[]) {
 
     FileInfo *fileInfo = (FileInfo *) malloc(sizeof(FileInfo));
+    fileInfo->mode = argv[1];
+    fileInfo->operation = argv[2];
     fileInfo->filename = argv[3];
-    fileInfo->size = atoi(argv[4]);
-    fileInfo->quantity = atoi(argv[5]);
+    fileInfo->quantity = atoi(argv[4]);
+    fileInfo->size = atoi(argv[5]);
 
     return fileInfo;
 }
