@@ -1,13 +1,19 @@
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <malloc.h>
 #include <time.h>
 #include <string.h>
+#include <ftw.h>
+#include <stdlib.h>
 #include "fileInfo.h"
 
-void printFileInfo(char *path, const struct stat *fileStat) {
+int max_size;
 
+void printFileInfo(const char *path, const struct stat *fileStat) {
+    if (fileStat->st_size > max_size)
+        return;
     printf("\nFile path: %s\n", path);
     printf("File size: %zd bytes\n",fileStat->st_size);
     printf("File permissions: ");
@@ -29,7 +35,6 @@ void printFileInfo(char *path, const struct stat *fileStat) {
 
     printf("\nFile last modified: %s",timbuf);
 
-
     printf("\n\n");
 }
 
@@ -50,7 +55,7 @@ void checkFile(char *path, int max_size) {
 
             stat(actualPath,fileStat);
 
-            if (fileStat->st_size <= max_size && S_ISREG((fileStat->st_mode))){
+            if (S_ISREG((fileStat->st_mode))){
                 // FILE HERE, PRINT INFO
                 printFileInfo(actualPath, fileStat);
             }
@@ -64,15 +69,29 @@ void checkFile(char *path, int max_size) {
     closedir(dir);
 }
 
+int nftw_callback(const char *path, const struct stat *fileStat, int typeflag, struct FTW *ftwbuf)
+{
+    if (typeflag == FTW_F)
+        printFileInfo(path,fileStat);
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
 
     if (argc != 3) {
-        printf("ERROR!!!! BAD ARGUMENTS!!!\n");
+        printf("ERROR ! ! ! NEED 2 ARGUMENTS ! ! ! FILEPATH AND MAX_SIZE\n");
         return 0;
     }
 
     FileInfo *fileInfo = enterFileInfo(argv);
+    max_size = fileInfo->size;
+
+    printf("\n\nUSING OPENDIR, READDIR\n\n");
     checkFile(fileInfo->path, fileInfo->size);
+
+    printf("\n\nUSING NFTW\n\n");
+    nftw(fileInfo->path, nftw_callback, 15, FTW_PHYS);
 
     return 0;
 }
