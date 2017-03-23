@@ -13,9 +13,9 @@ void generateLib(FileInfo *fileInfo) {
     for (i = 0; i < fileInfo->quantity; i++) {
         for (j = 0; j < fileInfo->size; j++) {
             fread(&sign, sizeof(sign), 1, randomData);
-            //fwrite(&sign, sizeof(sign), 1, results);
-            sign = (char) (rand() % 25 + 97);
             fwrite(&sign, sizeof(sign), 1, results);
+            //sign = (char) (rand() % 25 + 97);
+            //fwrite(&sign, sizeof(sign), 1, results);
         }
         fwrite("\n", sizeof(char), 1, results);
     }

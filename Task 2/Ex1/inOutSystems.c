@@ -14,9 +14,9 @@ void generateSys(FileInfo *fileInfo) {
     for (i = 0; i < fileInfo->quantity; i++) {
         for (j = 0; j < fileInfo->size; j++) {
             read(randomData, &sign, sizeof(sign));
-            //write(results, &sign, sizeof(sign));
-            sign = (char) (rand() % 25 + 97);
             write(results, &sign, sizeof(sign));
+            //sign = (char) (rand() % 25 + 97);
+            //write(results, &sign, sizeof(sign));
         }
         write(results, "\n", sizeof(char));
     }
