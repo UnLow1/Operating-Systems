@@ -7,21 +7,20 @@
 #define SIZE 255
 
 void environment_variable_detected(char *line) {
-    char *name;
+    char *name[1];
     char *value;
     line++;
 
-    name = strtok(line, " \n");
+    name[0] = strtok(line, " \n");
     line = NULL;
 
     if ((value = strtok(line, " \n")) != NULL) {
-        printf("setting environment variable = %s on value = %s\n", name, value);
-        setenv(name, value, 1);
+        printf("setting environment variable = %s on value = %s\n", name[0], value);
+        setenv(name[0], value, 1);
     } else {
-        printf("unsetting environment variable = %s\n", name);
-        unsetenv(name);
+        printf("unsetting environment variable = %s\n", name[0]);
+        unsetenv(name[0]);
     }
-    printf("getenv(%s) = %s\n", name, getenv(name));
 }
 
 void command_detected(char *line) {
@@ -33,8 +32,14 @@ void command_detected(char *line) {
     command = strtok(line, " \n");
     line = NULL;
     args[0] = (char *) malloc(strlen("/bin/") + strlen(command));
-    strcpy(args[0], "/bin/");
-    strcat(args[0], command);
+    if(command[0] != '.') {
+        strcpy(args[0], "/bin/");
+        strcat(args[0], command);
+    }
+    else {
+        strcpy(args[0],command);
+    }
+
     while ((args[i] = strtok(line, " \n")) != NULL) {
         line = NULL;
         i++;
@@ -65,7 +70,7 @@ void command_detected(char *line) {
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        perror("Wrong arguments! The only argument should be name of the file\\n");
+        perror("Wrong arguments! The only argument should be name of the file");
         exit(-1);
     }
 
