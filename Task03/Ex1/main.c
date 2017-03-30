@@ -64,8 +64,6 @@ void command_detected(char *line) {
             waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
-
-    printf("\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -85,13 +83,15 @@ int main(int argc, char *argv[]) {
     while (!feof(file)) {
         getline(&line, &len, file);
 
-        printf("\nLINE = %s\n", line);
+//        printf("\nLINE = %s\n", line);
 
         if (line[0] == '#') {
             environment_variable_detected(line);
         } else {
             command_detected(line);
         }
+
+        printf("\n");
     }
 
 
