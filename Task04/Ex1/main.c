@@ -6,22 +6,23 @@
 
 bool forward = true;
 
-void sigIntHandler(int signum)
+void sigHandler(int signum)
 {
-   printf("Received signal SIGINT.\n");
-   exit(1);
+   if (signum == SIGINT) {
+	printf("Received signal SIGINT.\n");
+	exit(1);
+   }
+   else if (signum == SIGTSTP) {
+   	forward = !forward;
+   } 
 }
 
-void sigStpHandler(int signum)
-{
-   forward = !forward;
-}
 
 int main(int argc, char *argv[]) {
    
    char letter = 'A';
    struct sigaction sa;
-   sa.sa_handler = sigStpHandler;
+   sa.sa_handler = sigHandler;
    
    while(1) {
    	printf(" %c\n",letter);
@@ -34,10 +35,10 @@ int main(int argc, char *argv[]) {
    		
    	if(letter > 'Z')
    		letter = 'A';
-   	if (letter < 'A')
+   	else if (letter < 'A')
    		letter = 'Z';
    		
-   	signal(SIGINT, sigIntHandler);
+   	signal(SIGINT, sigHandler);
    	sigaction(SIGTSTP, &sa, NULL);
    }
 
