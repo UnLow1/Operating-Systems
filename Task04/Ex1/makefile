@@ -6,4 +6,4 @@ program:
 .PHONY: clean
 
 clean: 
-	rm -f main demo limit_test
+	rm -f main
