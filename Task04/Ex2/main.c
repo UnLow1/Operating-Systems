@@ -3,33 +3,16 @@
 #include <unistd.h>
 #include <wait.h>
 #include <time.h>
-#include <stdbool.h>
-#include <sys/resource.h>
 
 int N, M, ind;
 pid_t *pids;
 pid_t parent_pid;
-
-void timeCheckpoint(const char *message) {
-    static struct timespec previous_real_time;
-    // Getting time values
-    struct rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
-    struct timespec real_time;
-    clock_gettime(CLOCK_REALTIME, &real_time);
-    // Show info
-    printf("real time: %lld  ---  %s\n",
-           (long long)(real_time.tv_sec-previous_real_time.tv_sec)*1000000+(real_time.tv_nsec-previous_real_time.tv_nsec)/1000,
-           message);
-    previous_real_time = real_time;
-}
 
 void sighandler(int signum, siginfo_t *siginfo, void *context) {
     if (signum == SIGUSR1) {
         printf("%d Received SIGUSR1 From %d\n", getpid(), siginfo->si_pid);
         pids[ind] = siginfo->si_pid;
         ind++;
-        timeCheckpoint("SIGUSR! SENT");
         if (M > 0) {
             M--;
             if (M == 0) {
@@ -58,13 +41,14 @@ void sighandler(int signum, siginfo_t *siginfo, void *context) {
 }
 
 int main(int argc, char *argv[]) {
-    pids = malloc(M * sizeof(int));
+
     if (argc != 3) {
         perror("Wrong arguments! Arguments should be N and M");
         exit(1);
     }
     N = atoi(argv[1]);
     M = atoi(argv[2]);
+    pids = malloc(N * sizeof(int));
     ind = 0;
     time_t t;
     srand((unsigned) time(&t));
@@ -89,22 +73,36 @@ int main(int argc, char *argv[]) {
             printf("%d Start working\n", child_pid);
             printf("%d Going sleep for %d seconds\n", child_pid, r);
             sleep(r);
+
+            time_t before;
+            time(&before);
+
             if (kill(parent_pid, SIGUSR1) != 0) {
                 perror("SIGSENT-ERROR:");
                 exit(1);
             }
-            while (true) {
-                sleep(1);
-            }   // just wait
 
-            printf("%d End working\n", child_pid);
+            sleep(3);
 
-            // don't forget to exit from the child
-            exit(0);
+            time_t after;
+            time(&after);
+            exit((int)difftime(before,after));
+
+//            struct timespec before, after;
+//            clock_gettime(CLOCK_REALTIME, &before);
+//            clock_gettime(CLOCK_REALTIME, &after);
+//            exit((after.tv_sec-before.tv_sec)*1000000+(after.tv_nsec-before.tv_nsec)/1000);
+
+//            int time = sleep(2+(unsigned int) rand()%10);
+//            if (time == 0) {
+//                printf("PID%d did not receive signal 'permission' (SIGUSR2) from parent\n", getpid());
+//                exit(0);
+//            }
+//            exit(time);
         }
-
     }
 // wait all child processes
+
     int status;
     for (i = 0; i < N; i++) {
         waitpid(pids[i], &status, 0);
@@ -112,7 +110,7 @@ int main(int argc, char *argv[]) {
         printf("%d exited with code %d\n", pids[i], status);
     }
 
-    sleep(1);
+    sleep(7);
     printf("END PARENT %d\n", parent_pid);
 
     return 0;
