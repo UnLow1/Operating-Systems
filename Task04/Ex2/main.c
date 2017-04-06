@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <wait.h>
 #include <time.h>
+#include <stdbool.h>
 
 int N, M, ind;
 pid_t *pids;
@@ -82,23 +83,13 @@ int main(int argc, char *argv[]) {
                 exit(1);
             }
 
-            sleep(3);
+            while(true) {
+                continue;
+            }
 
             time_t after;
             time(&after);
             exit((int)difftime(before,after));
-
-//            struct timespec before, after;
-//            clock_gettime(CLOCK_REALTIME, &before);
-//            clock_gettime(CLOCK_REALTIME, &after);
-//            exit((after.tv_sec-before.tv_sec)*1000000+(after.tv_nsec-before.tv_nsec)/1000);
-
-//            int time = sleep(2+(unsigned int) rand()%10);
-//            if (time == 0) {
-//                printf("PID%d did not receive signal 'permission' (SIGUSR2) from parent\n", getpid());
-//                exit(0);
-//            }
-//            exit(time);
         }
     }
 // wait all child processes
