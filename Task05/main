@@ -1,0 +1,139 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <unistd.h>
+#include <wait.h>
+
+#define SIZE 255
+
+void execCommand(char *command_with_args[SIZE], int commandCounter, int input, int output);
+
+
+int main(int argc, char *argv[]) {
+    if (argc != 1) {
+        perror("Wrong arguments! The only argument should be name of the file");
+        exit(-1);
+    }
+
+    char line[SIZE];
+    char *command_with_args[SIZE];
+    char *rest;
+    int commandCounter;
+    int i, status;
+
+    while (true) {
+        scanf(" %[^\n]", line);
+        rest = line;
+        printf("ALL LINE = %s\n", line);
+        command_with_args[0] = strtok_r(rest, "|", &rest);
+        commandCounter = 0;
+
+        while (command_with_args[commandCounter] != NULL) {
+            commandCounter++;
+            command_with_args[commandCounter] = strtok_r(rest, "|", &rest);
+        }
+
+        int fd[2];
+        int input = STDIN_FILENO;
+
+        for (i = 0; i < commandCounter - 1; i++) {
+            pipe(fd);
+            execCommand(command_with_args, i, input, fd[1]);
+            close(fd[1]);
+            input = fd[0];
+        }
+
+        if (commandCounter == 0)
+            commandCounter++;
+
+        char *args[SIZE], *command;
+
+        for (i = 0; i < SIZE; i++)
+            args[i] = NULL;
+        i = 1;
+
+        command = strtok(command_with_args[commandCounter - 1], " \n");
+        command_with_args[commandCounter - 1] = NULL;
+        args[0] = (char *) malloc(strlen(command));
+        strcat(args[0], command);
+
+        while ((args[i] = strtok(command_with_args[commandCounter - 1], " \n")) != NULL) {
+            command_with_args[commandCounter - 1] = NULL;
+            i++;
+        }
+        args[i] = NULL;
+
+        pid_t pid = fork();
+        if (pid == 0) {
+            if (input != STDIN_FILENO) {
+                dup2(input, STDIN_FILENO);
+                close(input);
+            }
+            if (execvp(args[0], args) == -1) {
+                perror("Can't exec command");
+            }
+        } else {
+            do {
+                waitpid(pid, &status, WUNTRACED);
+            } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+        }
+
+    }
+
+    return 0;
+}
+
+void execCommand(char *command_with_args[SIZE], int commandCounter, int input, int output) {
+    int status, i;
+    char *args[SIZE], *command;
+
+    printf("COMMAND_WITH_ARGS = %s\n", command_with_args[commandCounter]);
+
+    for (i = 0; i < SIZE; i++)
+        args[i] = NULL;
+    i = 1;
+
+    command = strtok(command_with_args[commandCounter], " \n");
+    command_with_args[commandCounter] = NULL;
+    args[0] = (char *) malloc(strlen(command));
+    strcat(args[0], command);
+
+    while ((args[i] = strtok(command_with_args[commandCounter], " \n")) != NULL) {
+        command_with_args[commandCounter] = NULL;
+        i++;
+    }
+    args[i] = NULL;
+
+    pid_t pid;
+    int fd[2];
+    pipe(fd);
+
+    pid = fork();
+    if (pid == 0) {
+        // Child process
+        if (input != STDIN_FILENO) {
+            dup2(input, STDIN_FILENO);
+            close(input);
+        }
+        if (output != STDOUT_FILENO) {
+            dup2(output, STDOUT_FILENO);
+            close(output);
+        }
+
+        if (execvp(args[0], args) == -1) {
+            perror("Can't exec command");
+        }
+        exit(EXIT_FAILURE);
+    } else if (pid < 0) {
+        // Error forking
+        perror("Can't make new procces");
+    } else {
+        // Parent process
+        do {
+            waitpid(pid, &status, WUNTRACED);
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
+
+}
