@@ -17,29 +17,20 @@ int main(int argc, char *argv[]) {
 
     int N = atoi(argv[2]);
     int K = atoi(argv[3]);
-//    mkfifo(argv[1],0666);
-//    FILE *pipe = fopen(argv[1], "w");
-    FILE *file = fopen("pipe.txt","w");
-
+    FILE *pipe = fopen(argv[1],"w");
     srand(time(NULL));
 
-    // second index in points[][]
-    // meaning: 0 - re, 1 - im, 2 - iters
+    // index in points[] meaning: 0 - re, 1 - im, 2 - iters
     double points[3];
     int i;
-//    char buffer[100];
     for (i = 0; i < N; i++) {
         points[0] = -2 + (rand() / (RAND_MAX / 3.0));  // -2 < re < 1
         points[1] = -1 + (rand() / (RAND_MAX / 2.0));  // -1 < im < 1
         points[2] = countIters(points[0], points[1], K);
-//        printf("Points[%d] = (%lf, %lf, %d)\n", i, points[i][0], points[i][1], (int) points[i][2]);
 
-        fprintf(file,"%.3f %.3f %d\n",points[0], points[1], (int) points[2]);
-//        sprintf(buffer, "%lf %lf %d\n", points[i][0], points[i][1], (int) points[i][2]);
-//        fprintf(pipe, "%s", buffer);
-//        fprintf(pipe, "%lf %lf %d\n", points[i][0], points[i][1], (int) points[i][2]);
+        fprintf(pipe, "%.3f %.3f %d\n", points[0], points[1], (int) points[2]);
     }
-//    fclose(pipe);
+    fclose(pipe);
 
     return 0;
 }
