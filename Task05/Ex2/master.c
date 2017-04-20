@@ -9,8 +9,8 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
     int R = atoi(argv[2]), i;
-//    FILE *pipe = fopen(argv[1], "r");
-    FILE *pipe = fopen("pipe.txt", "r");
+    mkfifo(argv[1],0666);
+    FILE *pipe = fopen(argv[1], "r");
 
     int **T = (int **) malloc(R* sizeof(*T));
     for (i = 0; i <= R; i++)
@@ -24,38 +24,35 @@ int main(int argc, char *argv[]) {
     FILE *file = fopen("data","w");
 
     while (fgets(line, 64, pipe)) {
-//        printf("line = %s",line);
         buffor = strtok(line, " \n");
         points[0] = atof(buffor);
-//        printf("points[0] = %f\n",points[0]);
         buffor = strtok(NULL, " \n");
         points[1] = atof(buffor);
-//        printf("points[1] = %f\n",points[1]);
         buffor = strtok(NULL, " \n");
         points[2] = atoi(buffor);
-//        printf("points[2] = %d\n",(int)points[2]);
 
-        x = (int) ((points[0]+2.0) / 3.0 * R);
-//        printf("x = %d\n",x);
-        y = (int) ((points[1]+1.0) / 2.0 * R);
-//        printf("y = %d\n",y);
+        x = (int) ((points[0] + 2) / 3 * R);
+        y = (int) ((points[1] + 1) / 2 * R);
         T[x][y] = (int) points[2];
-//        printf("T[x][y] = %d\n",T[x][y]);
-
-        fprintf(file,"%d %d %d\n",x,y,T[x][y]);
-
-
     }
+    fclose(pipe);
+
+    int j;
+    for (i =0 ;i<R;i++)
+        for(j=0;j<R;j++)
+            fprintf(file,"%d %d %d\n",i,j,T[i][j]);
+
     fclose(file);
 
-    FILE *gplotPipe = popen("gnuplot", "w");
-    fprintf(gplotPipe, "set view map\nset xrange[0:%d]\nset yrange[0:%d]\nplot 'data' with image\n", R, R);
-
-    fflush(gplotPipe);
-    printf("Press [ENTER] to exit\n");
+    FILE *plot = popen("gnuplot", "w");
+    fprintf(plot, "set view map\n");
+    fprintf(plot, "set xrange [0:%d]\n", R);
+    fprintf(plot, "set yrange[0:%d]\n",R);
+    fprintf(plot,"plot 'data' with image\n");
+    fflush(plot);
     getchar();
 
-    pclose(gplotPipe);
+    pclose(plot);
 
     return 0;
 }
