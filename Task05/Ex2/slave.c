@@ -25,16 +25,16 @@ int main(int argc, char *argv[]) {
 
     // second index in points[][]
     // meaning: 0 - re, 1 - im, 2 - iters
-    double points[N][3];
+    double points[3];
     int i;
 //    char buffer[100];
     for (i = 0; i < N; i++) {
-        points[i][0] = -2 + (rand() / (RAND_MAX / 3.0));  // -2 < re < 1
-        points[i][1] = -1 + (rand() / (RAND_MAX / 2.0));  // -1 < im < 1
-        points[i][2] = countIters(points[i][0], points[i][1], K);
+        points[0] = -2 + (rand() / (RAND_MAX / 3.0));  // -2 < re < 1
+        points[1] = -1 + (rand() / (RAND_MAX / 2.0));  // -1 < im < 1
+        points[2] = countIters(points[0], points[1], K);
 //        printf("Points[%d] = (%lf, %lf, %d)\n", i, points[i][0], points[i][1], (int) points[i][2]);
 
-        fprintf(file,"%lf %lf %d\n",points[i][0], points[i][1], (int) points[i][2]);
+        fprintf(file,"%.3f %.3f %d\n",points[0], points[1], (int) points[2]);
 //        sprintf(buffer, "%lf %lf %d\n", points[i][0], points[i][1], (int) points[i][2]);
 //        fprintf(pipe, "%s", buffer);
 //        fprintf(pipe, "%lf %lf %d\n", points[i][0], points[i][1], (int) points[i][2]);
@@ -54,7 +54,7 @@ int countIters(double re, double im, int K) {
             break;
         };
     }
-    if (i < 0)
+    if (i <= 0)
         return 0;
     return i - 1;
 }
