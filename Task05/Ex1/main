@@ -25,7 +25,6 @@ int main(int argc, char *argv[]) {
     while (true) {
         scanf(" %[^\n]", line);
         rest = line;
-        printf("ALL LINE = %s\n", line);
         command_with_args[0] = strtok_r(rest, "|", &rest);
         commandCounter = 0;
 
@@ -87,8 +86,6 @@ int main(int argc, char *argv[]) {
 void execCommand(char *command_with_args[SIZE], int commandCounter, int input, int output) {
     int status, i;
     char *args[SIZE], *command;
-
-    printf("COMMAND_WITH_ARGS = %s\n", command_with_args[commandCounter]);
 
     for (i = 0; i < SIZE; i++)
         args[i] = NULL;
