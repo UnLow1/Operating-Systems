@@ -7,4 +7,4 @@ program:
 .PHONY: clean
 
 clean: 
-	rm -f slave master
+	rm -f slave master data pipe
