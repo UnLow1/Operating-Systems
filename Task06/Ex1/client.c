@@ -89,10 +89,6 @@ int open_queue(key_t keyval, int flags) {
 
 void sig_handler(int signum) {
     printf("Caught signal %d, closing queue and coming out...\n", signum);
-    Message message;
-    message.type = TERMINATE;
-    message.pid = getpid();
-    send_message(message);
     exit(1);
 }
 
