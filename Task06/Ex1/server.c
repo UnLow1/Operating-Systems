@@ -125,10 +125,3 @@ void send_message(Message message) {
 void close_queue() {
     msgctl(server_queue_ID, IPC_RMID, NULL);
 }
-
-//void receive_message() {
-//    if (msgrcv(server_queue_ID, &message, MSG_SIZE, 0, 0) == -1) {
-//        perror("msgrcv problem");
-//        exit(-1);
-//    }
-//}
