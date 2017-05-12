@@ -30,7 +30,8 @@ int main(int argc, char *argv[]) {
     // getFIFO
     key_t key = ftok(PATH, PROJ_ID);
     int queueID = shmget(key, 0, 0);
-    struct MyQueue *myQueue = (struct MyQueue *) shmat(key, 0, 0);
+    struct MyQueue *myQueue = (struct MyQueue *) shmat(queueID, 0, 0);
+//    myQueue->actual_size = 0;
 
     // getSemaphore
     int semID = semget(key, 0, 0);
@@ -99,7 +100,7 @@ int main(int argc, char *argv[]) {
                 }
 
             }
-            printf("Client %d ending work\n",pid);
+            printf("Client %d ending work\n", pid);
         }
     }
     int status;
