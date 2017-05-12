@@ -9,6 +9,6 @@ typedef struct MyQueue {
     int actual_size;
     pid_t chair;
     pid_t queue[100];
-};
+} MyQueue;
 
 #endif //EX01_HEADER_H
