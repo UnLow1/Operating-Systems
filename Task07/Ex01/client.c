@@ -17,6 +17,8 @@ void sighandler(int signum);
 
 void timeCheckpoint();
 
+void semaphore(unsigned short num, short op, short flg, struct sembuf *buffer, int semID);
+
 int main(int argc, char *argv[]) {
     if (argc != 3) {
         perror("Wrong arguments! 2 args are needed: N and S");
@@ -53,33 +55,23 @@ int main(int argc, char *argv[]) {
         child_pid = fork();
         if (child_pid == 0) {
             // child process
-            struct sembuf *buffer;
+            struct sembuf buffer;
             pid_t pid = getpid();
             timeCheckpoint();
             printf("Client %d starting\n", pid);
             while (counter < S) {
-                //takeSemaphore
-                buffer->sem_num = 1;       // FIFO == 1
-                buffer->sem_op = -1;
-                buffer->sem_flg = 0;
-                semop(semID, buffer, 1);
+
+                semaphore(1, -1, 0, &buffer, semID);
 
                 int barberActive = semctl(semID, 0, GETVAL);
                 if (!barberActive) {
-                    //giveSemaphore
-                    buffer->sem_num = 0;    // barber == 0
-                    buffer->sem_op = 1;
-                    buffer->sem_flg = 0;
-                    semop(semID, buffer, 1);
 
+                    semaphore(0, 1, 0, &buffer, semID);
                     timeCheckpoint();
-                    printf("Client %d is waking up barber", pid);
+                    printf("Client %d is waking up barber\n", pid);
                     inSalon = true;
 
-                    buffer->sem_num = 0;    // barber == 0
-                    buffer->sem_op = 1;
-                    buffer->sem_flg = 0;
-                    semop(semID, buffer, 1);
+                    semaphore(0, 1, 0, &buffer, semID);
                     myQueue->chair = pid;
                 } else {
                     if (myQueue->max_size > myQueue->actual_size) {
@@ -87,12 +79,18 @@ int main(int argc, char *argv[]) {
                         myQueue->queue[myQueue->actual_size] = pid;
                         myQueue->actual_size++;
                         inSalon = true;
+                        timeCheckpoint();
+                        printf("Client %d is in queue\n",pid);
                     } else {
                         // Barber's studio is full
                         timeCheckpoint();
                         printf("Queue is full. Client %d is leavnig Barber.\n", pid);
                     }
                 }
+
+
+                semaphore(1, 1, 0, &buffer, semID);
+
                 if (inSalon) {
                     sigsuspend(&eventMask);
                     timeCheckpoint();
@@ -100,7 +98,9 @@ int main(int argc, char *argv[]) {
                 }
 
             }
+            timeCheckpoint();
             printf("Client %d ending work\n", pid);
+            exit(1);
         }
     }
     int status;
@@ -117,5 +117,12 @@ void sighandler(int signum) {
 void timeCheckpoint() {
     struct timespec real_time;
     clock_gettime(CLOCK_MONOTONIC, &real_time);
-    printf("timeCheckpoint %lld\n", (long long) (real_time.tv_sec * 1000000 + real_time.tv_nsec / 1000));
+    printf("timeCheckpoint %lld    ", (long long) (real_time.tv_sec * 1000000 + real_time.tv_nsec / 1000));
+}
+
+void semaphore(unsigned short num, short op, short flg, struct sembuf *buffer, int semID) {
+    buffer->sem_num = num;
+    buffer->sem_op = op;
+    buffer->sem_flg = flg;
+    semop(semID, buffer, 1);
 }
