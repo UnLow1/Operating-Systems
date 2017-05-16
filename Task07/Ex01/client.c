@@ -85,6 +85,7 @@ int main(int argc, char *argv[]) {
                         // Barber's studio is full
                         timeCheckpoint();
                         printf("Queue is full. Client %d is leavnig Barber.\n", pid);
+		        sleep(1);
                     }
                 }
 
@@ -95,6 +96,7 @@ int main(int argc, char *argv[]) {
                     sigsuspend(&eventMask);
                     timeCheckpoint();
                     printf("Client %d got cut. Client is leaving Barber.\n", pid);
+		    inSalon = false;
                 }
 
             }
@@ -112,6 +114,10 @@ int main(int argc, char *argv[]) {
 void sighandler(int signum) {
     if (signum == SIGUSR1)
         counter++;
+    else if (signum == SIGINT) {
+        printf("\nGot SIGINT, ending work.\n");
+        exit(1);
+    }
 }
 
 void timeCheckpoint() {
