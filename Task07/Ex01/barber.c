@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
     }
 
     int N = atoi(argv[1]);
+    signal(SIGINT, sighandler);
     // getFIFO
     key_t key = ftok(PATH, PROJ_ID);
     int queueID = shmget(key, sizeof(struct MyQueue), IPC_CREAT | 0666);
@@ -105,7 +106,7 @@ void timeCheckpoint() {
 
 void sighandler(int signum) {
     if (signum == SIGINT) {
-        printf("\nBarber, interrupted\n");
+        printf("\nGot SIGINT, ending work.\n");
         open = false;
         exit(1);
     }
