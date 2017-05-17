@@ -94,6 +94,9 @@ int main(int argc, char *argv[]) {
         }
 
     }
+    shmdt(myQueue);
+    semctl(semID, 0, IPC_RMID, 0);
+    shmctl(queueID, IPC_RMID, NULL);
 
     return 1;
 }
