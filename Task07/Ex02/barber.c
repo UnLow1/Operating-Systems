@@ -83,6 +83,12 @@ int main(int argc, char *argv[]) {
         }
 
     }
+    shm_unlink("shared_memory");
+    sem_close(semaphore_queue);
+    sem_unlink("queue");
+    sem_close(semaphore_barber);
+    sem_unlink("barber");
+
     return 0;
 }
 
@@ -92,9 +98,9 @@ void sighandler(int signum) {
         is_open = false;
         exit(1);
     }
-    else if (signum == SIGUSR1) {
-        printf("SIGUSR1\n");
-    }
+//    else if (signum == SIGUSR1) {
+//        printf("SIGUSR1\n");
+//    }
 }
 
 void timeCheckpoint() {
