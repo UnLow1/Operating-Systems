@@ -102,12 +102,13 @@ int main(int argc, char *argv[]) {
             }
             timeCheckpoint();
             printf("Client %d ending work\n", pid);
+            shmdt(myQueue);
             exit(1);
         }
     }
     int status;
     waitpid(child_pid, &status, 0);
-
+    shmdt(myQueue);
     return 0;
 }
 
