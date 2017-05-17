@@ -99,11 +99,16 @@ int main(int argc, char *argv[]) {
             }
             timeCheckpoint();
             printf("Client %d ending work\n", pid);
+            sem_close(semaphore_queue);
+            sem_close(semaphore_barber);
             exit(1);
         }
     }
     int status;
     waitpid(child_pid, &status, 0);
+
+    sem_close(semaphore_queue);
+    sem_close(semaphore_barber);
 
     return 0;
 }
