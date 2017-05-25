@@ -1,0 +1,37 @@
+zad. a)
+1. Wyslasnie sygnalu do procesu, gdy zaden watek nie ma zamaskowanego tego sygnalu:
+	wszystkie sygnaly dzialaja odpowiednio, tj.
+	SIUSR1 - User defined signal 1
+	SIGTERM - Terminated
+	SIGKILL - Killed
+	SIGSTOP - Stopped
+2. Wyslanie sygnalu do procesu, gdy glowny watek programu ma zamaskowany ten sygnal, a wszystkie pozostale watki nie:
+	wszystkie sygnaly dzialaja zgodnie z rpzewidywaniami, tj.
+	SIGUSR1 - Program wykonuje sie do konca
+	SIGTERM - Program wykonuje sie do konca
+	SIGKILL - Killed
+	SIGSTOP - Stopped
+3. Wyslanie sygnalu do procesu, gdy wszystkie watki maja zainstalowana niestandardowa procedure obslugi przerwania, ktora wypisuje informacje o nadejsciu tego sygnalu oraz PID i TID danego watku:
+	SIGUSR1 - PID 3313, TID 140468171937536 Caught signal 10
+		Thread 140468155197184 found word in record 13
+	SIGTERM - PID 3340, TID 139892847310592 Caught signal 15
+		Thread 139892830570240 found word in record 13
+	SIGKILL - Killed
+	SIGSTOP - Stopped
+4. Wyslanie sygnalu do watku z zamaskowanym tym sygnalem:
+	SIGUSR1 - Program wykonuje sie do konca
+	SIGTERM - Program wykonuje sie do konca
+	SIGKILL - Killed
+	SIGSTOP - Stopped
+5. Wyslanie sygnalu do watku, w ktorym zmieniona jest procedura obslugi sygnalu, jak przedstawiono w punkcie 3:
+	SIGUSR1 - Signal 10 send to thread 140484237448960
+		PID 3619, TID 140484237448960 Caught signal 10
+		Thread 140484237448960 found word in record 13
+	SIGTERM - Signal 15 send to thread 140260444468992
+		PID 3754, TID 140260444468992 Caught signal 15
+		Thread 140260444468992 found word in record 13
+	SIGKILL - Killed
+	SIGSTOP - Stopped
+
+zad. b)
+	Floating point exception (core dumped)
