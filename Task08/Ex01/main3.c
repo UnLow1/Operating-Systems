@@ -19,10 +19,6 @@ void error(char *msg) {
 }
 
 void *read_function(void *a) {
-    if (pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL) != 0)
-        error("Error pthread_setcanceltype");
-
-
     if (pthread_mutex_lock(&mutex) != 0)
         error("Error pthread_mutex_lock");
 
